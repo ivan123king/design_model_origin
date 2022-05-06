@@ -17,10 +17,10 @@ public abstract class Application {
 	public void newDocument(){
 		Document doc = this.createDocument();
 		this.docs.add(doc);
-		doc.open();
+		this.openDocument(doc);
 	}
 	
-	public void openDocument(int index){
-		this.docs.get(index).open();
+	public void openDocument(Document document){
+		document.open();
 	}
 }
