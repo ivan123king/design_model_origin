@@ -1,0 +1,23 @@
+# 说明
+桥接模式中，Window和WindowImp的关系就是一座桥。
+这里使用了组合，可以方便直接替换WindowImp。
+将窗口的具体绘制交给了WindowImp的子类去实现。
+而Window则负责对外展示窗口，在Client看来，他是使用Window的方法去绘制的窗口，而不是WindowImp。
+他只需要告诉Window这是一个什么系统（即初始XWindowImp还是PmWindowImp），就能绘制出对应的窗口。
+
+# 假设
+如果这是一个jar包提供出去，jar包中没有PmWindowImp和XWindowImp这两个具体实现类。
+使用jar包的人只需要引入jar包，然后实现WindowImp这个接口即可，在客户端调用时就可以使用Client类中方式。
+即使后面PmWindowImp和XWindowImp改变了绘制方式，也不需要修改Client，除非新来了一个系统。
+
+# 不足
+在桥接模式中，是把具体的平台实现和窗口分离开给解耦了，这就需要分解出实现，有时候很难知道哪些是实现，哪些是需要在IconWindow和TransientWindow中调用的。
+在IconWindow的drawBorder方法中，调用了WindowImp中的具体实现，这里调用了两个方法，
+在TransientWindow的drawCloseBox方法中，调用了WindowImp中一个方法。
+这里就需要WindowImp中将具体的实现原子化才可以，否则他就不能拥抱后续的变化。
+这种原子化的方式可能会导致方法很多。
+
+# 改进
+如果在WindowImp中再定义一个方法，drawOther，这是一个空方法，没有具体的内容。
+这是一个补充方法，如果其他方法没有适应后续系统，那么其他方法在子类中重写，全部为空实现，在drawOther中实现。
+这就要求WindowImp可以改为抽象类，Window的子类调用时，需要调用drawOther方法。
